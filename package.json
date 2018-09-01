@@ -1,0 +1,34 @@
+{
+  "name": "darkasync-explorer",
+  "version": "1.0.0",
+  "description": "Darkasync Explorer",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron .",
+    "rebuild": "electron-rebuild -f -w sqlite3",
+    "build": "electron-packager . --all darkasync --ignore-modules=node_modules/electron-*"
+  },
+  "author": "Francesco Poldi @noneprivacy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pielco11/DOGE"
+  },
+  "keywords": [
+    "darknet", "osint", "tor", "deepweb", "bitcoin", "hidden services"
+  ],
+  "license": "Apache 2.0",
+  "dependencies": {
+    "electron": "^1.8.6",
+    "jquery": "^3.3.1",
+    "path": "^0.12.7",
+    "sqlite3": "^4.0.0",
+    "uikit": "^3.0.0-beta.42",
+    "url": "^0.11.0",
+    "vis": "^4.21.0"
+  },
+  "devDependencies": {
+    "electron-osx-sign": "^0.4.10",
+    "electron-packager": "^12.0.1",
+    "electron-rebuild": "^1.7.3"
+  }
+}
