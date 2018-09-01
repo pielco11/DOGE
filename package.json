@@ -14,21 +14,26 @@
     "url": "https://github.com/pielco11/DOGE"
   },
   "keywords": [
-    "darknet", "osint", "tor", "deepweb", "bitcoin", "hidden services"
+    "darknet",
+    "osint",
+    "tor",
+    "deepweb",
+    "bitcoin",
+    "hidden services"
   ],
   "license": "Apache 2.0",
   "dependencies": {
-    "electron": "^1.8.6",
+    "electron": "^1.8.8",
     "jquery": "^3.3.1",
     "path": "^0.12.7",
-    "sqlite3": "^4.0.0",
-    "uikit": "^3.0.0-beta.42",
+    "sqlite3": "^4.0.2",
+    "uikit": "^3.0.0-rc.12",
     "url": "^0.11.0",
     "vis": "^4.21.0"
   },
   "devDependencies": {
     "electron-osx-sign": "^0.4.10",
-    "electron-packager": "^12.0.1",
-    "electron-rebuild": "^1.7.3"
+    "electron-packager": "^12.1.1",
+    "electron-rebuild": "^1.8.2"
   }
 }
