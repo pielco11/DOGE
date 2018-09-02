@@ -1,8 +1,8 @@
 <html>
-    <h1>Twint Graph Visualizer</h1>
+    <h1>Darknet OSINT Graph Explorer</h1>
     <head>
         <title>
-            Twint Graph Visualizer
+            Darknet OSINT Graph Explorer
         </title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,6 +32,58 @@
                 border: 1px solid #444444;
                 background-color: #444444;
             }
+            table.legend_table {
+                font-size: 11px;
+                border-width:1px;
+                border-color:#d3d3d3;
+                border-style:solid;
+            }
+            table.legend_table,td {
+                border-width:1px;
+                border-color:#d3d3d3;
+                border-style:solid;
+                padding: 2px;
+            }
+            div.table_content {
+                width:80px;
+                text-align:center;
+            }
+            div.table_description {
+                width:100px;
+            }
+            #operation {
+                font-size:28px;
+            }
+            #node-popUp {
+                display:none;
+                position:absolute;
+                top:350px;
+                left:170px;
+                z-index:299;
+                width:250px;
+                height:120px;
+                background-color: #f9f9f9;
+                border-style:solid;
+                border-width:3px;
+                border-color: #5394ed;
+                padding:10px;
+                text-align: center;
+            }
+            #edge-popUp {
+                display:none;
+                position:absolute;
+                top:350px;
+                left:170px;
+                z-index:299;
+                width:250px;
+                height:90px;
+                background-color: #f9f9f9;
+                border-style:solid;
+                border-width:3px;
+                border-color: #5394ed;
+                padding:10px;
+                text-align: center;
+            }
         </style>
     </head>
     <body>
@@ -45,22 +97,22 @@
                 </div>
 
                 <div uk-form-custom="target: > * > span:first-child">
-                    <select id="submitTable">
+                    <select id="queryTable">
                         <option value="">Please select...</option>
-                        <option value="emails where domain = ">Emails</option>
-                        <option value="bitcoins where domain = ">Bitcoins</option>
-                        <option value="following where follows =">Following</option>
+                        <option value="emails">Emails</option>
+                        <option value="bitcoins">Bitcoins</option>
+                        <option value="hses">Hidden Services</option>
                     </select>
                     <button class="uk-button uk-button-default" type="button" tabindex="-1">
                         <span></span>
                         <span uk-icon="icon: chevron-down"></span>
                     </button>
                 </div>
-                <input class="uk-input uk-form-width-medium" type="text" id="submitQuery" placeholder="Condition">
+                <input class="uk-input uk-form-width-medium" type="text" id="queryCondition" placeholder="Condition">
             </div>
             
             <div>
-                <input class="uk-input uk-form-width-medium" type="text" id="submitRawQuery" placeholder="Raw Query">
+                <input class="uk-input uk-form-width-medium" type="text" id="rawQuery" placeholder="Raw Query">
                 <button type="button" class="uk-button uk-button-default" onclick="loadQuery()">Load settings</button>
                 <button type="button" class="uk-button uk-button-default" onclick="loadGraph()">Load graph</button>
                 <button type="button" class="uk-button uk-button-default" onclick="importNetwork()">Import Graph</input>
@@ -71,25 +123,23 @@
             //var sqlite3 = require('sqlite3').verbose();
             var network;
             var data;
-            var nodes  = new vis.DataSet();
-            var edges  = new vis.DataSet();
-            var query  = "select distinct * from ";
-            var _table = "";
-            var _where = "";
-            var _raw_  = "";
-            var val    = "";
+            var nodes = new vis.DataSet();
+            var edges = new vis.DataSet();
+            var dbName = "";
             const sqlite3 = require('sqlite3').verbose();
             function loadQuery(){
-                _where = document.getElementById("submitQuery").value;
-                _table = document.getElementById("submitTable").value;
-                _raw_  = document.getElementById("submitRawQuery").value;
-                if (_raw_) { query = _raw_;}
-                else if (_where == "*") { query += _table.split(" ")[0];}
-                else{query += _table + "\"" + _where + "\"";}
-                val = document.getElementById("submitDatabase").value;
-                var db = new sqlite3.Database(val);
+                var query = "";
+                var table = document.getElementById("queryTable").value;
+                var condition = document.getElementById("queryCondition").value;
+                var rawQuery  = document.getElementById("rawQuery").value;
+                dbName = document.getElementById("submitDatabase").value;
+                var db = new sqlite3.Database(dbName);
                 console.log(query);
-                if (query.split(" ")[4] == "emails") {
+                if (table == "emails") {
+                    query = "SELECT DISTINCT valid_emails,domain FROM emails";
+                    if (condition != "*"){
+                        query += " " + condition;
+                    }
                     db.each(query, (err, result) => {
                         try{
                             nodes.add({
@@ -123,7 +173,11 @@
                         }
                     })
                 }
-                else if (query.split(" ")[4] == "bitcoins") {
+                else if (table == "bitcoins") {
+                    query = "SELECT DISTINCT bitcoin,domain FROM bitcoins";
+                    if (condition != "*"){
+                        query += " " + condition;
+                    }
                     db.each(query, (err, result) => {
                         try{
                             nodes.add({
@@ -151,6 +205,44 @@
                             edges.add({
                                 id    : result.domain + "_" + result.bitcoin,
                                 from  : result.bitcoin,
+                                to    : result.domain,
+                                arrows: 'to, from'
+                            });
+                        }
+                    })
+                }
+                else if (table == "hses") {
+                    query = "SELECT DISTINCT onion_service,domain FROM hses";
+                    if (condition != "*"){
+                        query += " " + condition;
+                    }
+                    db.each(query, (err, result) => {
+                        try{
+                            nodes.add({
+                                id   : result.onion_service,
+                                label: result.onion_service,
+                                group: 'domain'
+                            });
+                        }catch(err) {;}
+                        try{
+                            nodes.add({
+                                id   : result.domain,
+                                label: result.domain,
+                                group: 'domain'
+                            });
+                        }catch(err) {;}
+                        try{
+                            edges.add({
+                                id    : result.domain + "_" + result.onion_service,
+                                from  : result.onion_service,
+                                to    : result.domain,
+                                arrows: 'to'
+                            });
+                        }catch(err) {
+                            edges.remove(result.domain + "_" + result.onion_service);
+                            edges.add({
+                                id    : result.domain + "_" + result.onion_service,
+                                from  : result.onion_service,
                                 to    : result.domain,
                                 arrows: 'to, from'
                             });
@@ -217,7 +309,6 @@
                         
                     })
                 }
-                query  = "select * from ";
                 db.close();
             };
             function loadGraph(){
@@ -263,6 +354,33 @@
                         font: {
                             color: '#ffffff'
                         }
+                    },
+                    manipulation: {
+                        addNode: function (data, callback) {
+                            document.getElementById('node-operation').innerHTML = "Add Node";
+                            editNode(data, clearNodePopUp, callback);
+                        },
+                        editNode: function (data, callback) {
+                            document.getElementById('node-operation').innerHTML = "Edit Node";
+                            editNode(data, cancelNodeEdit, callback);
+                        },
+                        addEdge: function (data, callback) {
+                            if (data.from == data.to) {
+                                var r = confirm("Do you want to connect the node to itself?");
+                                if (r != true) {
+                                    callback(null);
+                                    return;
+                                    }
+                                }
+                            document.getElementById('edge-operation').innerHTML = "Add Edge";
+                            editEdgeWithoutDrag(data, callback);
+                        },
+                        editEdge: {
+                            editWithoutDrag: function(data, callback) {
+                                document.getElementById('edge-operation').innerHTML = "Edit Edge";
+                                editEdgeWithoutDrag(data,callback);
+                            }
+                        }
                     }
                 };
                 network = new vis.Network(container, data, options);
@@ -270,7 +388,86 @@
                     network.setOptions( { physics: false } );
                 });
             }
+            function editNode(data, cancelAction, callback) {
+                document.getElementById('node-label').value = data.label;
+                document.getElementById('node-type').value = data.group;
+                document.getElementById('node-id').value = data.id;
+                document.getElementById('node-saveButton').onclick = saveNodeData.bind(this, data, callback);
+                document.getElementById('node-cancelButton').onclick = cancelAction.bind(this, callback);
+                document.getElementById('node-popUp').style.display = 'block';
+            }
+            function clearNodePopUp() {
+                document.getElementById('node-saveButton').onclick = null;
+                document.getElementById('node-cancelButton').onclick = null;
+                document.getElementById('node-popUp').style.display = 'none';
+            }
+
+            function cancelNodeEdit(callback) {
+                clearNodePopUp();
+                callback(null);
+            }
+
+            function saveNodeData(data, callback) {
+                data.label = document.getElementById('node-label').value;
+                data.group = document.getElementById('node-type').value;
+                data.id = document.getElementById('node-label').value;
+                clearNodePopUp();
+                callback(data);
+            }
+
+            function editEdgeWithoutDrag(data, callback) {
+                document.getElementById('edge-label').value = data.label;
+                document.getElementById('edge-saveButton').onclick = saveEdgeData.bind(this, data, callback);
+                document.getElementById('edge-cancelButton').onclick = cancelEdgeEdit.bind(this,callback);
+                document.getElementById('edge-popUp').style.display = 'block';
+            }
+
+            function clearEdgePopUp() {
+                document.getElementById('edge-saveButton').onclick = null;
+                document.getElementById('edge-cancelButton').onclick = null;
+                document.getElementById('edge-popUp').style.display = 'none';
+            }
+
+            function cancelEdgeEdit(callback) {
+                clearEdgePopUp();
+                callback(null);
+            }
+
+            function saveEdgeData(data, callback) {
+                if (typeof data.to === 'object')
+                    data.to = data.to.id
+                if (typeof data.from === 'object')
+                    data.from = data.from.id
+                data.label = document.getElementById('edge-label').value;
+                clearEdgePopUp();
+                callback(data);
+            }
         </script>
+        <div id="node-popUp">
+            <span id="node-operation">node</span> <br>
+            <table style="margin:auto;">
+                <tr>
+                    <td>id</td><td><input id="node-id" value="" /></td>
+                </tr>
+                <tr>
+                    <td>label</td><td><input id="node-label" value="" /></td>
+                </tr>
+                <tr>
+                    <td>type</td><td><input id="node-type" value="" /></td>
+                </tr>
+            </table>
+            <input type="button" value="save" id="node-saveButton" />
+            <input type="button" value="cancel" id="node-cancelButton" />
+        </div>
+        <div id="edge-popUp">
+            <span id="edge-operation">edge</span> <br>
+            <table style="margin:auto;">
+                <tr>
+                    <td>label</td><td><input id="edge-label" value="" /></td>
+                </tr></table>
+            <input type="button" value="save" id="edge-saveButton" />
+            <input type="button" value="cancel" id="edge-cancelButton" />
+        </div>
         <div id="mynetwork"></div>
     </body>
 </html>
