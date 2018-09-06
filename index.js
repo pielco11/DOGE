@@ -19,23 +19,18 @@ app.on('ready' , function(){
         height: 600,
         minWidth: 200,
         minHeight: 200,
-        icon: __dirname + '/icon.icns'
+        autoHideMenuBar: true,
+        icon: __dirname + '/icon.iconset/logo.png'
     })
     win.on('closed', () => {
         win = null
     });
 	
 	win.loadURL(url.format({
-        pathname: path.join(__dirname, 'index.html'),
+        pathname: path.join(__dirname, 'pages/graph.html'),
         protocol: 'file:',
         slashes: true
     }));
-    
-    ipcMain.on('get-dashboard-url', (event, arg) => {
-        fs.readFile('./dashboard.txt', 'utf-8', (err, data) => {
-            event.sender.send('asynchronous-reply', data);
-        });
-    });
 
     var graphName = "";
 
