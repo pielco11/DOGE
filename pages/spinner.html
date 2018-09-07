@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="../css/uikit.min.css" />
+    </head>
+    <style>
+    #svg-spinner{
+        position: absolute;
+        top: 90.5px;
+        left: 90.5px;
+        transition-property: transform;
+        animation-name: rotate; 
+        animation-duration: 1s; 
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+    @keyframes rotate {
+        from {transform: rotate(0deg);}
+        to {transform: rotate(360deg);}
+    }
+    </style>
+    <body>
+        <h1>
+            <center>
+                D. O. G. E. v0.1
+            </center>
+        </h1>
+        <img id="svg-spinner" src="../icon.iconset/128x128.png"/>
+    </body>
+</html>

@@ -1,0 +1,177 @@
+<html>
+    <h1>
+        <center>
+            Darknet OSINT Graph Explorer
+        </center>
+    </h1>
+    <head>
+        <title>
+            D. O. G. E.
+        </title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../css/uikit.min.css" />
+        <script src="../js/uikit.min.js"></script>
+        <script src="../js/uikit-icons.min.js"></script>
+        <script src="../js/vivagraph.js"></script>
+        </script>
+            <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+            <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">         
+        <style>
+            form {
+                margin-left: 10px;
+            }
+            h1 {
+                margin-left: 10px;
+            }
+            body {
+                color: black
+            }
+            svg {
+                width: 100%;
+                height: 90%;
+                border: 1px solid #444444;
+                background-color: #ffffff;
+            }
+        </style>
+    </head>
+    <body onload="initGraph()">
+        <form action=ìì>      
+            <div class="uk-margin" uk-margin>
+                <div uk-form-custom="target: true">
+                    <input class="uk-input uk-form-width-medium" type="text" placeholder="Database file" id="submitDatabase">
+                </div>
+                <div uk-form-custom="target: true">
+                    <input class="uk-input uk-form-width-medium" type="text" placeholder="Graph file" id="graphFile">    
+                </div>
+
+                <input class="uk-input uk-form-width-medium" type="text" id="tableName" placeholder="Table">
+                <input class="uk-input uk-form-width-medium" type="text" id="queryCondition" placeholder="Condition">
+            </div>
+            
+            <div>
+                <input class="uk-input uk-form-width-medium" type="text" id="rawQuery" placeholder="Raw Query">
+                <button type="button" class="uk-button uk-button-default" onclick="loadGraph()">Load data</button>
+                <button type="button" class="uk-button uk-button-default" onclick="drawGraph()">Draw graph</button>
+                <button type="button" class="uk-button uk-button-default" onclick="importNetwork()">Import Graph</input>
+                <button type="button" class="uk-button uk-button-default" onclick="exportNetwork()">Export Graph</input>
+            </div>
+        </form>
+        <script>
+            var nodes = [];
+            var links = [];
+            var graph = Viva.Graph.graph();
+            var graphics = Viva.Graph.View.svgGraphics(),
+                nodeSize = 24;
+            var renderer = Viva.Graph.View.renderer(graph, {
+                graphics : graphics
+            });
+            function initGraph() {
+                graphics.node(function(node) {
+                    var ui = Viva.Graph.svg('g'),
+                    svgText = Viva.Graph.svg('text').attr('y', '-4px').text(node.id),
+                    img = Viva.Graph.svg('image')
+                        .attr('width', nodeSize)
+                        .attr('height', nodeSize)
+                        .link(node.data);
+
+                    ui.append(svgText);
+                    ui.append(img);
+                    return ui;
+                }).placeNode(function(nodeUI, pos) {
+                    nodeUI.attr('transform',
+                                'translate(' +
+                                      (pos.x - nodeSize/2) + ',' + (pos.y - nodeSize/2) +
+                                ')');
+                });
+                var createMarker = function(id) {
+                        return Viva.Graph.svg('marker')
+                                    .attr('id', id)
+                                    .attr('viewBox', "0 0 10 10")
+                                    .attr('refX', "10")
+                                    .attr('refY', "5")
+                                    .attr('markerUnits', "strokeWidth")
+                                    .attr('markerWidth', "10")
+                                    .attr('markerHeight', "5")
+                                    .attr('orient', "auto");
+                    },
+
+                marker = createMarker('Triangle');
+                marker.append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z');
+
+                var defs = graphics.getSvgRoot().append('defs');
+                defs.append(marker);
+
+                var geom = Viva.Graph.geom();
+
+                graphics.link(function(link){
+                    return Viva.Graph.svg('path')
+                               .attr('stroke', 'gray')
+                               .attr('marker-end', 'url(#Triangle)');
+                }).placeLink(function(linkUI, fromPos, toPos) {
+
+                var toNodeSize = nodeSize,
+                    fromNodeSize = nodeSize;
+
+                var from = geom.intersectRect(
+                                fromPos.x - fromNodeSize / 2, // left
+                                fromPos.y - fromNodeSize / 2, // top
+                                fromPos.x + fromNodeSize / 2, // right
+                                fromPos.y + fromNodeSize / 2, // bottom
+                                fromPos.x, fromPos.y, toPos.x, toPos.y)
+                           || fromPos; // if no intersection found - return center of the node
+
+                var to = geom.intersectRect(
+                                toPos.x - toNodeSize / 2, // left
+                                toPos.y - toNodeSize / 2, // top
+                                toPos.x + toNodeSize / 2, // right
+                                toPos.y + toNodeSize / 2, // bottom
+                                toPos.x, toPos.y, fromPos.x, fromPos.y)
+                            || toPos; // if no intersection found - return center of the node
+
+                var data = 'M' + from.x + ',' + from.y +
+                           'L' + to.x + ',' + to.y;
+
+                linkUI.attr("d", data);
+            });
+        };
+        function loadNode(id, link){
+            if (nodes.indexOf(id) == -1) {
+                nodes.push(id);
+                console.log("added id: " + id);
+                graph.addNode(id, link);
+            };
+            //graph.addNode('anvaka', 'https://secure.gravatar.com/avatar/91bad8ceeec43ae303790f8fe238164b');
+            //graph.addNode('indexzero', 'https://secure.gravatar.com/avatar/d43e8ea63b61e7669ded5b9d3c2e980f');
+            //graph.addNode('email1', '../images/envelope-solid.svg');
+            //graph.addNode('email2', '../images/envelope-solid.svg');
+            //graph.addNode('email3', '../images/envelope-solid.svg');
+            //graph.addLink('email1', 'email2');
+            //graph.addLink('email3', 'email2');
+            //graph.addLink('anvaka', 'indexzero');
+        };
+        function loadLink(from, to) {
+            if (links.indexOf(from + "_" + to) == -1) {
+                links.push(from + "_" + to);
+                graph.addLink(from, to);
+            };
+        };
+        function loadGraph(){
+            loadNode('anvaka', 'https://secure.gravatar.com/avatar/91bad8ceeec43ae303790f8fe238164b');
+            loadNode('indexzero', 'https://secure.gravatar.com/avatar/d43e8ea63b61e7669ded5b9d3c2e980f');
+            loadNode('email1', '../images/envelope-solid.svg');
+            loadNode('email2', '../images/envelope-solid.svg');
+            loadNode('email3', '../images/envelope-solid.svg');
+            loadLink('email1', 'email2');
+            loadLink('email3', 'email2');
+            loadLink('anvaka', 'indexzero');
+        };
+        function drawGraph(){
+            //var renderer = Viva.Graph.View.renderer(graph, {
+            //        graphics : graphics
+            //    });
+            renderer.run();
+        };
+        </script>
+    </body>
+</html>

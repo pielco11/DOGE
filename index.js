@@ -20,17 +20,50 @@ app.on('ready' , function(){
         minWidth: 200,
         minHeight: 200,
         autoHideMenuBar: true,
+        show: false,
         icon: __dirname + '/icon.iconset/logo.png'
     })
     win.on('closed', () => {
         win = null
     });
-	
-	win.loadURL(url.format({
-        pathname: path.join(__dirname, 'pages/graph.html'),
+
+    splash = new BrowserWindow({
+        width: 300, 
+        height: 300,
+        transparent: false, 
+        frame: false, 
+        alwaysOnTop: true,
+        resizable: false
+    });
+
+    splash.loadURL(url.format({
+        pathname: path.join(__dirname, 'pages/spinner.html'),
         protocol: 'file:',
         slashes: true
     }));
+    setTimeout(function (){
+        win.loadURL(url.format({
+            pathname: path.join(__dirname, 'pages/graph_1.html'),
+            protocol: 'file:',
+            slashes: true
+        }));
+        win.once('ready-to-show', () => {
+            splash.destroy();
+            win.show();
+        });
+    }, 1000);
+
+    //win.loadURL(url.format({
+    //    pathname: path.join(__dirname, 'pages/spinner.html'),
+    //    protocol: 'file:',
+    //    slashes: true
+    //}));
+	
+	//win.loadURL(url.format({
+    //    pathname: path.join(__dirname, 'pages/graph_1.html'),
+    //    protocol: 'file:',
+    //    slashes: true
+    //}));
 
     var graphName = "";
 
