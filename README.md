@@ -37,6 +37,7 @@ Choose the table ("please select"), accepted values are: `emails`,`bitcoins` or 
 ## Custom icons
 Every icon comes from Font Awesome, I just changed colors.
 ![icons](images/icons.png)
+![icons2](images/icons_2.png)
 
 ## Screenshots
 ![dashboard](images/screenshot_30.png)
