@@ -40,6 +40,7 @@ Every icon comes from Font Awesome, I just changed colors.
 ![icons2](images/icons_2.png)
 
 ## Screenshots
+![example](images/example_query.png)
 ![dashboard](images/screenshot_30.png)
 ![dashboard1](images/screenshot_31.png)
 ![dashboard2](images/screenshot_32.png)

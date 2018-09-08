@@ -1,49 +1,49 @@
-const solid = "../icons/solid/"
-const brands = "../icons/brands/"
+solid = "../icons/solid/"
+brands = "../icons/brands/"
 
-const email = solid + "envelope.svg";
-const domain = solid + "building.svg";
-const criminal = solid + "angry.svg";
-const malware = solid + "bug.svg";
-const vector = solid + "bus.svg";
-const lightDrug = solid + "cannabis.svg";
-const heavyDrug = solid + "capsules.svg";
-const IOC = solid + "car-crash.svg";
-const admin = solid + "crown.svg";
-const child = solid + "child.svg";
-const market = solid + "city.svg";
-const cloud = solid + "cloud.svg";
-const forum = solid + "comments.svg";
-const creditCard = solid + "credit-card.svg";
-const arms = solid + "crosshairs.svg";
-const dumps = solid + "datasolid.svg";
-const pdf = solid + "file-pdf.svg";
-const audio = solid + "file-audio.svg";
-const image = solid + "file-image.svg";
-const ppt = solid + "file-powerpoint.svg";
-const video = solid + "file-video.svg";
-const docx = solid + "file-word.svg";
-const fingerprint = solid + "fingerprint.svg";
-const key = solid + "key.svg";
-const position = solid + "map-marked-alt.svg";
-const user = solid + "user-alt.svg";
-
-const bitcoin = brands + "bitcoin.svg";
-const discord = brands + "discord.svg";
-const facebook = brands + "facebook.svg";
-const keybase = brands + "keybase.svg";
-const linkedin = brands + "linkedin.svg";
-const monero = brands + "monero.svg";
-const paypal = brands + "paypal.svg";
-const reddit = brands + "reddit.svg";
-const skype = brands + "skype.svg";
-const snapchat = brands + "snapchat-square.svg";
-const stackOverflow = brands + "stack-overflow.svg";
-const telegram = brands + "telegram.svg";
-const tumblr = brands + "tumblr-square.svg";
-const twitter = brands + "twitter.svg";
-const vk = brands + "vk.svg";
-const whatsapp = brands + "whatsapp.svg";
-const yahoo = brands + "yahoo.svg";
-const youtube = brands + "youtube.svg";
-
+const icons = {
+    "email" : solid + "envelope.svg",
+    "domain" : solid + "building.svg",
+    "criminal" : solid + "angry.svg",
+    "malware" : solid + "bug.svg",
+    "vector" : solid + "bus.svg",
+    "lightDrug" : solid + "cannabis.svg",
+    "heavyDrug" : solid + "capsules.svg",
+    "IOC" : solid + "car-crash.svg",
+    "admin" : solid + "crown.svg",
+    "child" : solid + "child.svg",
+    "market" : solid + "city.svg",
+    "cloud" : solid + "cloud.svg",
+    "forum" : solid + "comments.svg",
+    "creditCard" : solid + "credit-card.svg",
+    "arms" : solid + "crosshairs.svg",
+    "dumps" : solid + "datasolid.svg",
+    "pdf" : solid + "file-pdf.svg",
+    "audio" : solid + "file-audio.svg",
+    "image" : solid + "file-image.svg",
+    "ppt" : solid + "file-powerpoint.svg",
+    "video" : solid + "file-video.svg",
+    "docx" : solid + "file-word.svg",
+    "fingerprint" : solid + "fingerprint.svg",
+    "key" : solid + "key.svg",
+    "position" : solid + "map-marked-alt.svg",
+    "user" : solid + "user-alt.svg",
+    "bitcoin" : brands + "bitcoin.svg",
+    "discord" : brands + "discord.svg",
+    "facebook" : brands + "facebook.svg",
+    "keybase" : brands + "keybase.svg",
+    "linkedin" : brands + "linkedin.svg",
+    "monero" : brands + "monero.svg",
+    "paypal" : brands + "paypal.svg",
+    "reddit" : brands + "reddit.svg",
+    "skype" : brands + "skype.svg",
+    "snapchat" : brands + "snapchat-square.svg",
+    "stackOverflow" : brands + "stack-overflow.svg",
+    "telegram" : brands + "telegram.svg",
+    "tumblr" : brands + "tumblr-square.svg",
+    "twitter" : brands + "twitter.svg",
+    "vk" : brands + "vk.svg",
+    "whatsapp" : brands + "whatsapp.svg",
+    "yahoo" : brands + "yahoo.svg",
+    "youtube" : brands + "youtube.svg",
+}

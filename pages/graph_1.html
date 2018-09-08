@@ -85,23 +85,25 @@
                     <input class="uk-input uk-form-width-medium" type="text" placeholder="Graph file" id="graphFile">    
                 </div>
 
-                <input class="uk-input uk-form-width-medium" type="text" id="tableName" placeholder="Table">
-                <input class="uk-input uk-form-width-medium" type="text" id="queryCondition" placeholder="Condition">
+                <input class="uk-input uk-form-width-medium" type="text" id="iconTypeInput" placeholder="Icon From">
+                <input class="uk-input uk-form-width-medium" type="text" id="iconTypeOutput" placeholder="Icon To">
                 <input class="uk-input uk-form-width-medium" type="text" id="centerToNode" placeholder="Center to node">
+                <button type="button" class="uk-button uk-button-default" onclick="centerGraph()">Center Graph</input>
             </div>
             
             <div>
-                <input class="uk-input uk-form-width-medium" type="text" id="rawQuery" placeholder="Raw Query">
+                <input class="uk-input uk-form-width-large" type="text" id="query" placeholder="Query">
                 <button type="button" class="uk-button uk-button-default" onclick="loadGraph()">Load data</button>
                 <button type="button" class="uk-button uk-button-default" onclick="drawGraph()">Draw graph</button>
                 <button type="button" class="uk-button uk-button-default" onclick="importNetwork()">Import Graph</input>
                 <button type="button" class="uk-button uk-button-default" onclick="exportNetwork()">Export Graph</input>
-                <button type="button" class="uk-button uk-button-default" onclick="centerGraph()">Center Graph</input>
                 <button type="button" class="uk-button uk-button-default" onclick="precomputeGraph()">Prerender</input>
             </div>
         </form>
         <div id="graphHere"></div>
         <script>
+            const sqlite3 = require('sqlite3').verbose();
+            
             var nodes = [];
             var links = [];
             var graph = Viva.Graph.graph();
@@ -205,17 +207,31 @@
             };
         };
         function loadGraph(){
-            for (let i = 0; i < 200; i++) {
-                loadNode('email'+i, email);
-            }
-            for (let u = 0; u < 90; u++) {
-                var a = u+1
-                loadLink('email'+u, 'email'+a);
-            }
-            for (let u = 90; u < 190; u++) {
-                var a = u+1
-                loadLink('email'+u, 'email'+a);
-            }
+            // next lines to use just as example and reference
+            //for (let i = 0; i < 200; i++) {
+            //    loadNode('email'+i, email);
+            //}
+            //for (let u = 0; u < 90; u++) {
+            //    var a = u+1
+            //    loadLink('email'+u, 'email'+a);
+            //}
+            //for (let u = 90; u < 190; u++) {
+            //    var a = u+1
+            //    loadLink('email'+u, 'email'+a);
+            //}
+            var query = "";
+            var iconTypeFrom = icons[document.getElementById("iconTypeInput").value];
+            var iconTypeTo = icons[document.getElementById("iconTypeOutput").value];
+            var rawQuery  = document.getElementById("query").value;
+            var db = new sqlite3.Database(document.getElementById("submitDatabase").value);
+            console.log(rawQuery);
+            // query: SELECT DISTINCT custom_column_name AS from, another_custom_name AS to FROM some_table;
+            // obviously you can add other options as WHERE or ORDER BY
+            db.each(rawQuery, (err, result) => {
+                loadNode(result.input, iconTypeFrom)
+                loadNode(result.output, iconTypeTo)
+                loadLink(result.input, result.output)
+            })
         };
         function precomputeGraph(){
             precompute(4000, drawGraph);
