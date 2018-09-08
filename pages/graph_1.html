@@ -32,7 +32,7 @@
                 width: 100%;
                 height: 90%;
                 border: 1px solid #444444;
-                background-color: #ffffff;
+                background-color: #444444;
             }
         </style>
     </head>
@@ -59,7 +59,6 @@
             </div>
         </form>
         <script>
-            const emailType = "../images/envelope-solid.svg";
             var nodes = [];
             var links = [];
             var graph = Viva.Graph.graph();
@@ -71,7 +70,7 @@
             function initGraph() {
                 graphics.node(function(node) {
                     var ui = Viva.Graph.svg('g'),
-                    svgText = Viva.Graph.svg('text').attr('y', '-4px').text(node.id),
+                    svgText = Viva.Graph.svg('text').attr('y', '-4px').attr('fill', '#FFFFFF').text(node.id),
                     img = Viva.Graph.svg('image')
                         .attr('width', nodeSize)
                         .attr('height', nodeSize)
@@ -108,7 +107,7 @@
 
                 graphics.link(function(link){
                     return Viva.Graph.svg('path')
-                               .attr('stroke', 'gray')
+                               .attr('stroke', 'white')
                                .attr('marker-end', 'url(#Triangle)');
                 }).placeLink(function(linkUI, fromPos, toPos) {
 
