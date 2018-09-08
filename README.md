@@ -15,21 +15,19 @@ Query prototype: SELECT DISTINCT custom_column_name AS input, another_custom_nam
 
 `Graph file`: useless (now as now)
 
-Choose the table ("please select"), accepted values are: `emails`,`bitcoins` or `hses`.
+`Icon From`: the type of the "from" entity (email -> domain, email is "from", domain is "to"), so the same as `Icon To`
 
-`Condition`: type `*` to return every row, otherwise you should insert something like `where domain="some.onion"`
+`Center to node`: put node id here, then click on `Center Graph` to center the graph to that specific node id
 
-`Raw query`: don't use this, behaviour not handled
+`Query`: write here the query that you'll use to retrieve data from the database, follow the prototype above
 
-`Load Settings`: add data but don't draw, you could use this to import stuff from various databases and when everyting is imported, draw
+`Load Data`: add data but don't draw, you could use this to import stuff from various databases and when everyting is imported, draw
 
-`Load Graph`: draws nodes with edges
+`Draw Graph`: draws nodes with edges
 
 `Import Graph`: useless (now as now)
 
 `Export Graph`: useless (now as now)
-
-`Center to node`: put node id here, then click on `Center Graph` to center the graph to that specific node id
 
 `Prerender`: does not display the graph until the "pre-rendering" process is done, this should be used when you have to graph 100s of nodes, feel free to change parameters:
 - 1st argument, `precomputeGraph()`, in `pages/graph_1.html`;
