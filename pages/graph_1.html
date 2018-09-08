@@ -48,6 +48,7 @@
 
                 <input class="uk-input uk-form-width-medium" type="text" id="tableName" placeholder="Table">
                 <input class="uk-input uk-form-width-medium" type="text" id="queryCondition" placeholder="Condition">
+                <input class="uk-input uk-form-width-medium" type="text" id="centerToNode" placeholder="Center to node">
             </div>
             
             <div>
@@ -56,6 +57,7 @@
                 <button type="button" class="uk-button uk-button-default" onclick="drawGraph()">Draw graph</button>
                 <button type="button" class="uk-button uk-button-default" onclick="importNetwork()">Import Graph</input>
                 <button type="button" class="uk-button uk-button-default" onclick="exportNetwork()">Export Graph</input>
+                <button type="button" class="uk-button uk-button-default" onclick="centerGraph()">Center Graph</input>
             </div>
         </form>
         <script>
@@ -64,8 +66,15 @@
             var graph = Viva.Graph.graph();
             var graphics = Viva.Graph.View.svgGraphics(),
                 nodeSize = 24;
+            var layout = Viva.Graph.Layout.forceDirected(graph, {
+                   springLength : 10,
+                   springCoeff : 0.0008,
+                   dragCoeff : 0.02,
+                   gravity : -1.2
+            });
             var renderer = Viva.Graph.View.renderer(graph, {
-                graphics : graphics
+                graphics : graphics,
+                layout: layout
             });
             function initGraph() {
                 graphics.node(function(node) {
@@ -150,13 +159,12 @@
             };
         };
         function loadGraph(){
-            for (let i = 0; i < 1000; i++) {
+            for (let i = 0; i < 100; i++) {
                 loadNode('email'+i, email);
             }
-            for (let u = 0; u < 100; u++) {
-                for (let i = 1; i < 10; i++) {
-                    loadLink('email'+i, 'email'+u);
-                }
+            for (let u = 0; u < 90; u++) {
+                var a = u+1
+                loadLink('email'+u, 'email'+a);
             }
             //loadNode('email1', emailType);
             //loadNode('email2', emailType);
@@ -167,6 +175,13 @@
         function drawGraph(){
             renderer.run();
         };
+        function centerGraph() {
+            var nodeId = document.getElementById("centerToNode").value;
+            if (graph.getNode(nodeId)) {
+                var pos = layout.getNodePosition(nodeId);
+                renderer.moveTo(pos.x, pos.y);
+            }
+        }
         </script>
     </body>
 </html>
