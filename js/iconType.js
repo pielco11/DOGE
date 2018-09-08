@@ -25,7 +25,7 @@ const video = solid + "file-video.svg";
 const docx = solid + "file-word.svg";
 const fingerprint = solid + "fingerprint.svg";
 const key = solid + "key.svg";
-const location = solid + "map-marked-alt.svg";
+const position = solid + "map-marked-alt.svg";
 const user = solid + "user-alt.svg";
 
 const bitcoin = brands + "bitcoin.svg";
