@@ -58,6 +58,7 @@
             </div>
         </form>
         <script>
+            const emailType = "../images/envelope-solid.svg";
             var nodes = [];
             var links = [];
             var graph = Viva.Graph.graph();
@@ -141,14 +142,6 @@
                 console.log("added id: " + id);
                 graph.addNode(id, link);
             };
-            //graph.addNode('anvaka', 'https://secure.gravatar.com/avatar/91bad8ceeec43ae303790f8fe238164b');
-            //graph.addNode('indexzero', 'https://secure.gravatar.com/avatar/d43e8ea63b61e7669ded5b9d3c2e980f');
-            //graph.addNode('email1', '../images/envelope-solid.svg');
-            //graph.addNode('email2', '../images/envelope-solid.svg');
-            //graph.addNode('email3', '../images/envelope-solid.svg');
-            //graph.addLink('email1', 'email2');
-            //graph.addLink('email3', 'email2');
-            //graph.addLink('anvaka', 'indexzero');
         };
         function loadLink(from, to) {
             if (links.indexOf(from + "_" + to) == -1) {
@@ -157,19 +150,21 @@
             };
         };
         function loadGraph(){
-            loadNode('anvaka', 'https://secure.gravatar.com/avatar/91bad8ceeec43ae303790f8fe238164b');
-            loadNode('indexzero', 'https://secure.gravatar.com/avatar/d43e8ea63b61e7669ded5b9d3c2e980f');
-            loadNode('email1', '../images/envelope-solid.svg');
-            loadNode('email2', '../images/envelope-solid.svg');
-            loadNode('email3', '../images/envelope-solid.svg');
-            loadLink('email1', 'email2');
-            loadLink('email3', 'email2');
-            loadLink('anvaka', 'indexzero');
+            for (let i = 0; i < 1000; i++) {
+                loadNode('email'+i, emailType);
+            }
+            for (let u = 0; u < 100; u++) {
+                for (let i = 1; i < 10; i++) {
+                    loadLink('email'+i, 'email'+u);
+                }
+            }
+            //loadNode('email1', emailType);
+            //loadNode('email2', emailType);
+            //loadNode('email3', emailType);
+            //loadLink('email1', 'email2');
+            //loadLink('email3', 'email2');
         };
         function drawGraph(){
-            //var renderer = Viva.Graph.View.renderer(graph, {
-            //        graphics : graphics
-            //    });
             renderer.run();
         };
         </script>
