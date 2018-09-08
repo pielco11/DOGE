@@ -7,6 +7,9 @@ Still in dev, works right.
 
 You should use this in addtion to [Darknet OSINT Transform](https://github.com/pielco11/DOT)
 
+## Pay attention here
+Query prototype: SELECT DISTINCT custom_column_name AS input, another_custom_name AS output FROM some_table, obviously you can add other options as WHERE, ORDER BY, etc.
+
 ## How-To
 `Database file`: the filename of the database (sqlite3), ex: db.sqlite3
 
