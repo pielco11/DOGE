@@ -43,7 +43,7 @@ app.on('ready' , function(){
     }));
     setTimeout(function (){
         win.loadURL(url.format({
-            pathname: path.join(__dirname, 'pages/graph_1.html'),
+            pathname: path.join(__dirname, 'pages/graph.html'),
             protocol: 'file:',
             slashes: true
         }));

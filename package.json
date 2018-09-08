@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "rebuild": "electron-rebuild -f -w sqlite3",
-    "build": "electron-packager . --all darkasync --ignore-modules=node_modules/electron-*"
+    "build": "electron-packager . --all doge --ignore-modules=node_modules/electron-*"
   },
   "author": "Francesco Poldi @noneprivacy",
   "repository": {
