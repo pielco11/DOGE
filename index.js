@@ -21,7 +21,7 @@ app.on('ready' , function(){
         minHeight: 200,
         autoHideMenuBar: true,
         show: false,
-        icon: __dirname + '/icon.iconset/logo.png'
+        icon: __dirname + '/logo/logo.png'
     })
     win.on('closed', () => {
         win = null
@@ -43,7 +43,7 @@ app.on('ready' , function(){
     }));
     setTimeout(function (){
         win.loadURL(url.format({
-            pathname: path.join(__dirname, 'pages/graph.html'),
+            pathname: path.join(__dirname, 'pages/graph_1.html'),
             protocol: 'file:',
             slashes: true
         }));
