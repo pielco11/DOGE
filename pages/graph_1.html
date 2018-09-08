@@ -34,6 +34,45 @@
                 border: 1px solid #444444;
                 background-color: #444444;
             }
+            #svg-spinner{
+                position: absolute;
+                top: 110.5px;
+                left: 85.5px;
+                transition-property: transform;
+                animation-name: rotate; 
+                animation-duration: 1s; 
+                animation-iteration-count: infinite;
+                animation-timing-function: linear;
+            }
+            #svg-spinner-renderer{
+                position: relative;
+                top: 0px;
+                left: 0px;
+                transition-property: transform;
+                animation-name: rotate; 
+                animation-duration: 1s; 
+                animation-iteration-count: infinite;
+                animation-timing-function: linear;
+            }
+            @keyframes rotate {
+                from {transform: rotate(0deg);}
+                to {transform: rotate(360deg);}
+            }
+            #renderingPopUP {
+                display:none;
+                position:absolute;
+                top:50%;
+                left:40%;
+                z-index:299;
+                width:200px;
+                height:120px;
+                background-color: #f9f9f9;
+                border-style:solid;
+                border-width:5px;
+                border-color: #ff9933;
+                padding:10px;
+                text-align: center;
+            }
         </style>
     </head>
     <body onload="initGraph()">
@@ -58,8 +97,10 @@
                 <button type="button" class="uk-button uk-button-default" onclick="importNetwork()">Import Graph</input>
                 <button type="button" class="uk-button uk-button-default" onclick="exportNetwork()">Export Graph</input>
                 <button type="button" class="uk-button uk-button-default" onclick="centerGraph()">Center Graph</input>
+                <button type="button" class="uk-button uk-button-default" onclick="precomputeGraph()">Prerender</input>
             </div>
         </form>
+        <div id="graphHere"></div>
         <script>
             var nodes = [];
             var links = [];
@@ -67,16 +108,21 @@
             var graphics = Viva.Graph.View.svgGraphics(),
                 nodeSize = 24;
             var layout = Viva.Graph.Layout.forceDirected(graph, {
-                   springLength : 10,
-                   springCoeff : 0.0008,
-                   dragCoeff : 0.02,
-                   gravity : -1.2
+                   springLength : 120,
+                   springCoeff : 0.0004,
+                   dragCoeff : 0.04,
+                   gravity : -1.5,
+                   stableThreshold: 1
             });
             var renderer = Viva.Graph.View.renderer(graph, {
                 graphics : graphics,
-                layout: layout
+                layout: layout,
+                prerender: true,
+                renderLinks: true,
+                container: document.querySelector("#graphHere")
             });
             function initGraph() {
+                document.getElementById('renderingPopUP').style.display = 'none';
                 graphics.node(function(node) {
                     var ui = Viva.Graph.svg('g'),
                     svgText = Viva.Graph.svg('text').attr('y', '-4px').attr('fill', '#FFFFFF').text(node.id),
@@ -159,10 +205,14 @@
             };
         };
         function loadGraph(){
-            for (let i = 0; i < 100; i++) {
+            for (let i = 0; i < 200; i++) {
                 loadNode('email'+i, email);
             }
             for (let u = 0; u < 90; u++) {
+                var a = u+1
+                loadLink('email'+u, 'email'+a);
+            }
+            for (let u = 90; u < 190; u++) {
                 var a = u+1
                 loadLink('email'+u, 'email'+a);
             }
@@ -171,6 +221,10 @@
             //loadNode('email3', emailType);
             //loadLink('email1', 'email2');
             //loadLink('email3', 'email2');
+        };
+        function precomputeGraph(){
+            precompute(4000, drawGraph);
+            document.getElementById('renderingPopUP').style.display = 'none';
         };
         function drawGraph(){
             renderer.run();
@@ -181,7 +235,31 @@
                 var pos = layout.getNodePosition(nodeId);
                 renderer.moveTo(pos.x, pos.y);
             }
+        };
+        function precompute(iterations, callback) {
+            document.getElementById('renderingPopUP').style.display = 'block';
+            var _num = 0;
+            var i = 0;
+            while (iterations > 0 && i < 20) {
+                layout.step();
+                iterations--;
+                _num = 4000 - iterations;
+                document.getElementById('valueRender').value = _num/40;
+                i++;
+            }
+            if (iterations > 0) {
+                setTimeout(function () {
+                    precompute(iterations, callback);
+                }, 0); // keep going in next even cycle
+            } else {
+                document.getElementById('renderingPopUP').style.display = 'none';
+                callback();
+            }
         }
         </script>
+        <div id="renderingPopUP">
+            <img id="svg-spinner-renderer" src="../logo/64x64.png"/> <br> <br>
+            <progress id="valueRender" value="0" max="100"></progress>
+        </div>
     </body>
 </html>

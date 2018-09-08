@@ -13,6 +13,8 @@ menu.append(new MenuItem({ label: 'Electron', type: 'checkbox', checked: true })
 
 let mainWindow;
 
+app.commandLine.appendSwitch('--ignore-gpu-blacklist');
+
 app.on('ready' , function(){
     win = new BrowserWindow({
         width: 1200, 
