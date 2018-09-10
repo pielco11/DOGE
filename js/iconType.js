@@ -1,5 +1,5 @@
-solid = "../icons/solid/"
-brands = "../icons/brands/"
+const solid = "../icons/solid/"
+const brands = "../icons/brands/"
 
 const icons = {
     "email" : solid + "envelope.svg",
