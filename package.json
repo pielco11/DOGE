@@ -23,6 +23,7 @@
   ],
   "license": "Apache 2.0",
   "dependencies": {
+    "elasticsearch": "^15.1.1",
     "electron": "^1.8.8",
     "jquery": "^3.3.1",
     "path": "^0.12.7",

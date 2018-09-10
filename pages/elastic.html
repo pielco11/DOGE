@@ -1,0 +1,286 @@
+<html>
+    <h1>
+        <center>
+            Darknet OSINT Graph Explorer
+        </center>
+    </h1>
+    <head>
+        <title>
+            D. O. G. E.
+        </title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../css/uikit.min.css" />
+        <script src="../js/uikit.min.js"></script>
+        <script src="../js/uikit-icons.min.js"></script>
+        <script src="../js/vivagraph.js"></script>
+        <script src="../js/iconType.js"></script>
+        </script>
+            <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+            <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+        <style>
+            form {
+                margin-left: 10px;
+            }
+            h1 {
+                margin-left: 10px;
+            }
+            body {
+                color: black
+            }
+            svg {
+                width: 100%;
+                height: 90%;
+                border: 1px solid #444444;
+                background-color: #444444;
+            }
+            #svg-spinner{
+                position: absolute;
+                top: 110.5px;
+                left: 85.5px;
+                transition-property: transform;
+                animation-name: rotate;
+                animation-duration: 1s;
+                animation-iteration-count: infinite;
+                animation-timing-function: linear;
+            }
+            #svg-spinner-renderer{
+                position: relative;
+                top: 0px;
+                left: 0px;
+                transition-property: transform;
+                animation-name: rotate;
+                animation-duration: 1s;
+                animation-iteration-count: infinite;
+                animation-timing-function: linear;
+            }
+            @keyframes rotate {
+                from {transform: rotate(0deg);}
+                to {transform: rotate(360deg);}
+            }
+            #renderingPopUP {
+                display:none;
+                position:absolute;
+                top:50%;
+                left:40%;
+                z-index:299;
+                width:200px;
+                height:120px;
+                background-color: #f9f9f9;
+                border-style:solid;
+                border-width:5px;
+                border-color: #ff9933;
+                padding:10px;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body onload="initGraph()">
+        <form action=ìì>
+            <div class="uk-margin" uk-margin>
+                <div uk-form-custom="target: true">
+                    <input class="uk-input uk-form-width-medium" type="text" placeholder="Elastic Host" id="elasticsearch-host">
+                </div>
+                <div uk-form-custom="target: true">
+                    <input class="uk-input uk-form-width-medium" type="text" placeholder="Graph file" id="graphFile">
+                </div>
+
+                <input class="uk-input uk-form-width-medium" type="text" id="iconTypeInput" placeholder="Icon From">
+                <input class="uk-input uk-form-width-medium" type="text" id="iconTypeOutput" placeholder="Icon To">
+                <input class="uk-input uk-form-width-medium" type="text" id="centerToNode" placeholder="Center to node">
+                <button type="button" class="uk-button uk-button-default" onclick="centerGraph()">Center Graph</input>
+            </div>
+
+            <div>
+                <input class="uk-input uk-form-width-large" type="text" id="query" placeholder="Query">
+                <button type="button" class="uk-button uk-button-default" onclick="loadGraph()">Load data</button>
+                <button type="button" class="uk-button uk-button-default" onclick="drawGraph()">Draw graph</button>
+                <button type="button" class="uk-button uk-button-default" onclick="importNetwork()">Import Graph</input>
+                <button type="button" class="uk-button uk-button-default" onclick="exportNetwork()">Export Graph</input>
+                <button type="button" class="uk-button uk-button-default" onclick="precomputeGraph()">Prerender</input>
+            </div>
+        </form>
+        <div id="graphHere"></div>
+        <script>
+            const sqlite3 = require('sqlite3').verbose();
+
+            var nodes = [];
+            var links = [];
+            var graph = Viva.Graph.graph();
+            var graphics = Viva.Graph.View.svgGraphics(),
+                nodeSize = 24;
+            var layout = Viva.Graph.Layout.forceDirected(graph, {
+                   springLength : 120,
+                   springCoeff : 0.0004,
+                   dragCoeff : 0.04,
+                   gravity : -1.5,
+                   stableThreshold: 1
+            });
+            var renderer = Viva.Graph.View.renderer(graph, {
+                graphics : graphics,
+                layout: layout,
+                prerender: true,
+                renderLinks: true,
+                container: document.querySelector("#graphHere")
+            });
+            function initGraph() {
+                document.getElementById('renderingPopUP').style.display = 'none';
+                graphics.node(function(node) {
+                    var ui = Viva.Graph.svg('g'),
+                    svgText = Viva.Graph.svg('text').attr('y', '-4px').attr('fill', '#FFFFFF').text(node.id),
+                    img = Viva.Graph.svg('image')
+                        .attr('width', nodeSize)
+                        .attr('height', nodeSize)
+                        .link(node.data);
+
+                    ui.append(svgText);
+                    ui.append(img);
+                    return ui;
+                }).placeNode(function(nodeUI, pos) {
+                    nodeUI.attr('transform',
+                                'translate(' +
+                                      (pos.x - nodeSize/2) + ',' + (pos.y - nodeSize/2) +
+                                ')');
+                });
+                var createMarker = function(id) {
+                        return Viva.Graph.svg('marker')
+                                    .attr('id', id)
+                                    .attr('viewBox', "0 0 10 10")
+                                    .attr('refX', "10")
+                                    .attr('refY', "5")
+                                    .attr('markerUnits', "strokeWidth")
+                                    .attr('markerWidth', "10")
+                                    .attr('markerHeight', "5")
+                                    .attr('orient', "auto");
+                    },
+
+                marker = createMarker('Triangle');
+                marker.append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z');
+
+                var defs = graphics.getSvgRoot().append('defs');
+                defs.append(marker);
+
+                var geom = Viva.Graph.geom();
+
+                graphics.link(function(link){
+                    return Viva.Graph.svg('path')
+                               .attr('stroke', 'white')
+                               .attr('marker-end', 'url(#Triangle)');
+                }).placeLink(function(linkUI, fromPos, toPos) {
+
+                var toNodeSize = nodeSize,
+                    fromNodeSize = nodeSize;
+
+                var from = geom.intersectRect(
+                                fromPos.x - fromNodeSize / 2, // left
+                                fromPos.y - fromNodeSize / 2, // top
+                                fromPos.x + fromNodeSize / 2, // right
+                                fromPos.y + fromNodeSize / 2, // bottom
+                                fromPos.x, fromPos.y, toPos.x, toPos.y)
+                           || fromPos; // if no intersection found - return center of the node
+
+                var to = geom.intersectRect(
+                                toPos.x - toNodeSize / 2, // left
+                                toPos.y - toNodeSize / 2, // top
+                                toPos.x + toNodeSize / 2, // right
+                                toPos.y + toNodeSize / 2, // bottom
+                                toPos.x, toPos.y, fromPos.x, fromPos.y)
+                            || toPos; // if no intersection found - return center of the node
+
+                var data = 'M' + from.x + ',' + from.y +
+                           'L' + to.x + ',' + to.y;
+
+                linkUI.attr("d", data);
+            });
+        };
+        function loadNode(id, link){
+            if (nodes.indexOf(id) == -1) {
+                nodes.push(id);
+                console.log("added id: " + id);
+                graph.addNode(id, link);
+            };
+        };
+        function loadLink(from, to) {
+            if (links.indexOf(from + "_" + to) == -1) {
+                links.push(from + "_" + to);
+                graph.addLink(from, to);
+            };
+        };
+        function loadGraph(){
+            var query = "";
+            var iconTypeFrom = icons[document.getElementById("iconTypeInput").value];
+            var iconTypeTo = icons[document.getElementById("iconTypeOutput").value];
+            var rawQuery  = document.getElementById("query").value;
+            var esProto = document.getElementById("elasticsearch-host").value.split(":")[0];
+            var esHost = document.getElementById("elasticsearch-host").value.split(":")[1];
+            var esPort = document.getElementById("elasticsearch-host").value.split(":")[2];
+            if (!esPort) {esPort = 9200}
+            var elasticsearch = require('elasticsearch');
+            var client = new elasticsearch.Client({
+                host : [{
+                    host: esHost,
+                    port: esPort,
+                    protocol: esProto,
+                    log: 'trace'
+                }]
+            });
+            client.search({
+                index: 'twint',
+                type: 'items',
+                size: 1000,
+                body: {
+                    query: {
+                        match: {
+                            username: 'Pielco11'
+                        }
+                    }
+                }
+            }).then(function (resp) {
+                var hits = resp.hits.hits;
+                console.log(hits)
+            }, function (err) {
+                console.trace(err.message);
+            });
+            //console.log(rawQuery);
+        };
+        function precomputeGraph(){
+            precompute(4000, drawGraph);
+            document.getElementById('renderingPopUP').style.display = 'none';
+        };
+        function drawGraph(){
+            renderer.run();
+        };
+        function centerGraph() {
+            var nodeId = document.getElementById("centerToNode").value;
+            if (graph.getNode(nodeId)) {
+                var pos = layout.getNodePosition(nodeId);
+                renderer.moveTo(pos.x, pos.y);
+            }
+        };
+        function precompute(iterations, callback) {
+            document.getElementById('renderingPopUP').style.display = 'block';
+            var _num = 0;
+            var i = 0;
+            while (iterations > 0 && i < 20) {
+                layout.step();
+                iterations--;
+                _num = 4000 - iterations;
+                document.getElementById('valueRender').value = _num/40;
+                i++;
+            }
+            if (iterations > 0) {
+                setTimeout(function () {
+                    precompute(iterations, callback);
+                }, 0); // keep going in next even cycle
+            } else {
+                document.getElementById('renderingPopUP').style.display = 'none';
+                callback();
+            }
+        }
+        </script>
+        <div id="renderingPopUP">
+            <img id="svg-spinner-renderer" src="../logo/64x64.png"/> <br> <br>
+            <progress id="valueRender" value="0" max="100"></progress>
+        </div>
+    </body>
+</html>

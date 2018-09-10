@@ -17,7 +17,7 @@ app.commandLine.appendSwitch('--ignore-gpu-blacklist');
 
 app.on('ready' , function(){
     win = new BrowserWindow({
-        width: 1200, 
+        width: 1200,
         height: 600,
         minWidth: 200,
         minHeight: 200,
@@ -30,10 +30,10 @@ app.on('ready' , function(){
     });
 
     splash = new BrowserWindow({
-        width: 300, 
+        width: 300,
         height: 300,
-        transparent: false, 
-        frame: false, 
+        transparent: false,
+        frame: false,
         alwaysOnTop: true,
         resizable: false
     });
@@ -45,7 +45,7 @@ app.on('ready' , function(){
     }));
     setTimeout(function (){
         win.loadURL(url.format({
-            pathname: path.join(__dirname, 'pages/graph_1.html'),
+            pathname: path.join(__dirname, 'pages/elastic.html'),
             protocol: 'file:',
             slashes: true
         }));
@@ -60,7 +60,7 @@ app.on('ready' , function(){
     //    protocol: 'file:',
     //    slashes: true
     //}));
-	
+
 	//win.loadURL(url.format({
     //    pathname: path.join(__dirname, 'pages/graph_1.html'),
     //    protocol: 'file:',
@@ -91,4 +91,3 @@ app.on('ready' , function(){
 	 	menu.popup(menu)
   	});
 });
-  
