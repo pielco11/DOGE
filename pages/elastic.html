@@ -73,6 +73,21 @@
                 padding:10px;
                 text-align: center;
             }
+            #formPopUP {
+                position: absolute;
+                text-align: center;
+                width:300px;
+                height:600px;
+                opacity:.95;
+                top:50%;
+                left:40%;
+                display:none;
+                position:fixed;
+                background-color:#FFFFFF;
+                border-color: #444444;
+                overflow:auto;
+                border: 2px solid gray;
+            }
         </style>
     </head>
     <body onload="initGraph()">
@@ -84,7 +99,7 @@
                 <div uk-form-custom="target: true">
                     <input class="uk-input uk-form-width-medium" type="text" placeholder="Graph file" id="graphFile">
                 </div>
-
+                <button type="button" class="uk-button uk-button-default" onclick="openForm()">Form</input>
                 <input class="uk-input uk-form-width-medium" type="text" id="iconTypeInput" placeholder="Icon From">
                 <input class="uk-input uk-form-width-medium" type="text" id="iconTypeOutput" placeholder="Icon To">
                 <input class="uk-input uk-form-width-medium" type="text" id="centerToNode" placeholder="Center to node">
@@ -125,6 +140,7 @@
             });
             function initGraph() {
                 document.getElementById('renderingPopUP').style.display = 'none';
+                document.getElementById('formPopUP').style.display = 'none';
                 graphics.node(function(node) {
                     var ui = Viva.Graph.svg('g'),
                     svgText = Viva.Graph.svg('text').attr('y', '-4px').attr('fill', '#FFFFFF').text(node.id),
@@ -276,11 +292,27 @@
                 document.getElementById('renderingPopUP').style.display = 'none';
                 callback();
             }
+        };
+        function openForm() {
+            document.getElementById('formPopUP').style.display = "block";
+        };
+        function connectToElasticsearch(){
+            document.getElementById('formPopUP').style.display = "none";
         }
         </script>
         <div id="renderingPopUP">
             <img id="svg-spinner-renderer" src="../logo/64x64.png"/> <br> <br>
             <progress id="valueRender" value="0" max="100"></progress>
+        </div>
+        <div id="formPopUP">
+            <form>
+            <h2>Connect to Elastic instance</h2>
+            <input class="uk-input uk-form-danger uk-form-width-medium" type="text" id="esHost" placeholder="Elastic host">
+            <input class="uk-input uk-form-danger uk-form-width-medium" type="text" id="esPort" placeholder="Elastic port">
+            <input class="uk-input uk-form-danger uk-form-width-medium" type="text" id="esProto" placeholder="Elastic proto">
+            <input class="uk-input uk-form-danger uk-form-width-medium" type="text" id="esIndex" placeholder="Elastic index">
+            <button type="button" class="uk-button uk-button-default" onclick="connectToElasticsearch()">Connect</input>
+            </form>
         </div>
     </body>
 </html>

@@ -5,6 +5,7 @@ var fs = require('fs');
 //var sqlite3 = require('sqlite3').verbose();
 
 const {app, BrowserWindow, ipcMain, Menu, MenuItem} = require('electron');
+const notifier = require('node-notifier');
 
 const menu = new Menu()
 menu.append(new MenuItem({ label: 'Hello' }))
@@ -66,6 +67,11 @@ app.on('ready' , function(){
     //    protocol: 'file:',
     //    slashes: true
     //}));
+
+    //notifier.notify({
+    //    title: 'hi you',
+    //    message: 'message'
+    //});
 
     var graphName = "";
 
