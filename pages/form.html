@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../css/uikit.min.css" />
+        <script src="../js/uikit.min.js"></script>
+        <script src="../js/uikit-icons.min.js"></script>
+        <script src="../js/iconType.js"></script>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    </head>
+    <style>
+        body {
+            text-align: center;
+            margin-left: auto;
+            margin-top: auto;
+            margin-bottom: auto;
+            margin-right: auto;
+            padding-top: 50px;
+        }
+    </style>
+    <body>
+        <h2>
+            Elastic Form
+        </h2>
+        <div class="uk-margin" uk-margin>
+            <input class="uk-input uk-form-width-medium" type="text" id="esProto" placeholder="Protocol">
+            <input class="uk-input uk-form-width-medium" type="text" id="esHost" placeholder="Hostname">
+            <input class="uk-input uk-form-width-medium" type="text" id="esPort" placeholder="Port">
+            <button type="button" class="uk-button uk-button-default" id="connector">Connect</input>
+        </div>
+    </body>
+    <script>
+        const {ipcRenderer} = require('electron');
+        const connector = document.getElementById('connector');
+        
+        connector.addEventListener('click', () => {
+            var creds = {};
+            creds['esProto'] = document.getElementById('esProto').value;
+            creds['esHost'] = document.getElementById('esHost').value;
+            creds['esPort'] = document.getElementById('esPort').value;
+            console.log(creds)
+            ipcRenderer.send('post-creds', creds)
+        });
+
+    </script>
+</html>
